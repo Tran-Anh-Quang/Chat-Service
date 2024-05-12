@@ -1,7 +1,7 @@
 package com.quangta.chatapp.controller;
 
 import com.quangta.chatapp.dto.ApiResponse;
-import com.quangta.chatapp.dto.UpdateUserRequest;
+import com.quangta.chatapp.dto.request.UpdateUserRequest;
 import com.quangta.chatapp.entity.User;
 import com.quangta.chatapp.service.UserService;
 import lombok.AccessLevel;

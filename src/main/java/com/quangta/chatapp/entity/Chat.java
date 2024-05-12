@@ -18,13 +18,11 @@ public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String chat_name;
-    private String chat_image;
+    private String chatName;
+    private String chatImage;
 
-    @Column(name = "is_group")
     private Boolean isGroup;
 
-    @Column(name = "created_by")
     @ManyToOne
     private User createdBy;
 

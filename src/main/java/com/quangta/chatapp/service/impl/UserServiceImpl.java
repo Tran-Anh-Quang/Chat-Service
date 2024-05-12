@@ -1,6 +1,6 @@
 package com.quangta.chatapp.service.impl;
 
-import com.quangta.chatapp.dto.UpdateUserRequest;
+import com.quangta.chatapp.dto.request.UpdateUserRequest;
 import com.quangta.chatapp.entity.User;
 import com.quangta.chatapp.exception.UserErrorCode;
 import com.quangta.chatapp.exception.UserException;
@@ -21,14 +21,9 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-    }
-
-    @Override
     public User updateUser(Long id, UpdateUserRequest request) {
-        var user = findUserById(id);
+        var user = userRepository.findById(id).orElseThrow(
+                () -> new UserException(UserErrorCode.USER_NOT_FOUND));
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }

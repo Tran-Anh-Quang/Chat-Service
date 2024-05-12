@@ -1,4 +1,4 @@
-package com.quangta.chatapp.dto;
+package com.quangta.chatapp.dto.request;
 
 import lombok.Builder;
 import lombok.Data;

@@ -17,4 +17,15 @@ public class GlobalExceptionHandler {
                         .message(errorCode.getMessage())
                         .build());
     }
+
+    @ExceptionHandler(value = ChatException.class)
+    ResponseEntity<ApiResponse> handleChatException(ChatException e) {
+        UserErrorCode errorCode = e.getUserErrorCode();
+
+        return ResponseEntity.status(errorCode.getHttpStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
 }
