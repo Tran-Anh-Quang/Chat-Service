@@ -1,10 +1,13 @@
 package com.quangta.chatapp.controller;
 
+import com.quangta.chatapp.entity.ChatMessage;
 import com.quangta.chatapp.service.ChatService;
-import com.quangta.chatapp.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,5 +19,9 @@ public class ChatController {
 
     ChatService chatService;
 
-    UserService userService;
+    @PostMapping("/send-message")
+    public ResponseEntity<String> sendMessage(@RequestBody ChatMessage message) {
+        chatService.sendMessage(message);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,14 +1,13 @@
 package com.quangta.chatapp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,15 +15,19 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class User {
-
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String username;
-    String email;
-    String password;
-    String avatar;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
 
+    @ManyToOne
+    @JoinColumn(name = "recipient_id")
+    private User recipient;
+
+    private String content;
+    private LocalDateTime timestamp;
 }
