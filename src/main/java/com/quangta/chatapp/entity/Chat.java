@@ -23,6 +23,9 @@ public class Chat {
 
     private Boolean isGroup;
 
+    @ManyToMany
+    private Set<User> admins = new HashSet<>();
+
     @ManyToOne
     private User createdBy;
 

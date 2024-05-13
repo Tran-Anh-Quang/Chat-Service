@@ -12,13 +12,13 @@ public interface ChatService {
 
     Chat findAllChatByUserId(Long userId);
 
-    Chat createGroup(GroupChatRequest request, User requestUserId);
+    Chat createGroup(GroupChatRequest request, User requestUser);
 
-    Chat addUserToGroup(Long chatId, Long userId);
+    Chat addUserToGroup(Long chatId, Long userId, User requestUser);
 
-    Chat renameGroup(Long chatId, String groupName, Long requestUserId);
+    Chat renameGroup(Long chatId, String groupName, User requestUser);
 
-    Chat removeUserFromGroup(Long chatId, Long userId, Long requestUserId);
+    Chat removeUserFromGroup(Long chatId, Long userId, User requestUser);
 
-    Chat deleteChat(Long chatId, Long requestUserId);
+    void deleteChat(Long chatId, Long requestUserId);
 }

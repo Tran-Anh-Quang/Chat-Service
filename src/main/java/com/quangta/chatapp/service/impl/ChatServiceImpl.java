@@ -42,7 +42,7 @@ public class ChatServiceImpl implements ChatService {
         chat.getUsers().add(recipient);
         chat.getUsers().add(senderId);
 
-        return chat;
+        return chatRepository.save(chat);
     }
 
     @Override
@@ -63,12 +63,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Chat createGroup(GroupChatRequest request, User requestUserId) {
+    public Chat createGroup(GroupChatRequest request, User requestUser) {
         Chat group = new Chat();
         group.setIsGroup(true);
         group.setChatImage(request.getChatImage());
         group.setChatName(request.getChatName());
-        group.setCreatedBy(requestUserId);
+        group.setCreatedBy(requestUser);
+        group.getAdmins().add(requestUser);
 
         for (Long userId : request.getUserIds()) {
             User user = userRepository.findById(userId)
@@ -76,26 +77,68 @@ public class ChatServiceImpl implements ChatService {
             group.getUsers().add(user);
         }
 
-        return group;
+        return chatRepository.save(group);
     }
 
     @Override
-    public Chat addUserToGroup(Long chatId, Long userId) {
-        return null;
+    public Chat addUserToGroup(Long chatId, Long userId, User requestUser) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        var chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND));
+
+        if (!chat.getAdmins().contains(requestUser)) {
+            throw new ChatException(ChatErrorCode.USER_NOT_ADMIN);
+        }
+        chat.getUsers().add(user);
+
+        return chatRepository.save(chat);
     }
 
     @Override
-    public Chat renameGroup(Long chatId, String groupName, Long requestUserId) {
-        return null;
+    public Chat renameGroup(Long chatId, String groupName, User requestUser) {
+        var chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND));
+
+        if (!chat.getUsers().contains(requestUser)) {
+            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT);
+        }
+
+        chat.setChatName(groupName);
+        return chatRepository.save(chat);
     }
 
     @Override
-    public Chat removeUserFromGroup(Long chatId, Long userId, Long requestUserId) {
-        return null;
+    public Chat removeUserFromGroup(Long chatId, Long userId, User requestUser) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        var chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND));
+
+        if (chat.getAdmins().contains(requestUser)) {
+            chat.getUsers().remove(user);
+            return chatRepository.save(chat);
+        }else if (chat.getUsers().contains(user)) {
+            if (user.getId().equals(requestUser.getId())) {
+                chat.getUsers().remove(user);
+                chatRepository.save(chat);
+                return chat;
+            }
+        }else {
+            throw new ChatException(ChatErrorCode.USER_NOT_ADMIN);
+        }
+
+        return chat;
     }
 
     @Override
-    public Chat deleteChat(Long chatId, Long requestUserId) {
-        return null;
+    public void deleteChat(Long chatId, Long requestUserId) {
+        var chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND));
+        if (chat.getCreatedBy().getId().equals(requestUserId)) {
+            chatRepository.delete(chat);
+        }
     }
 }
