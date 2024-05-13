@@ -5,23 +5,22 @@ import com.quangta.chatapp.service.ChatService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/chats")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatController {
+    SimpMessagingTemplate messagingTemplate;
 
     ChatService chatService;
 
-    @PostMapping("/send-message")
-    public ResponseEntity<String> sendMessage(@RequestBody ChatMessage message) {
-        chatService.sendMessage(message);
-        return ResponseEntity.ok().build();
+    @MessageMapping("/chat.sendMessage")
+    public void sendMessage(@Payload ChatMessage chatMessage) {
+        chatService.saveMessage(chatMessage);
+        messagingTemplate.convertAndSendToUser(chatMessage.getTo(), "/queue/messages", chatMessage);
     }
 }
